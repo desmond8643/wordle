@@ -3,9 +3,10 @@ import React from 'react';
 interface KeyboardProps {
   onKeyPress: (key: string) => void;
   evaluations: Array<Array<'hit' | 'present' | 'miss' | ''>>;
+  disabled?: boolean;
 }
 
-const Keyboard: React.FC<KeyboardProps> = ({ onKeyPress, evaluations }) => {
+const Keyboard: React.FC<KeyboardProps> = ({ onKeyPress, evaluations, disabled = false }) => {
   const rows = [
     ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
     ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
@@ -16,14 +17,12 @@ const Keyboard: React.FC<KeyboardProps> = ({ onKeyPress, evaluations }) => {
   const letterStates: Record<string, 'hit' | 'present' | 'miss' | null> = {};
 
   // Process all evaluations to determine the state of each letter
-  evaluations.forEach(rowEval => {
+  evaluations.forEach((rowEval, rowIndex) => {
     if (!rowEval || rowEval[0] === '') return;
     
-    rowEval.forEach((evaluation, index) => {
-      const guessIndex = evaluations.findIndex(e => e === rowEval);
-      if (guessIndex === -1) return;
-      
-      const letter = document.querySelector(`[data-guess="${guessIndex}"]`)?.textContent?.[index]?.toLowerCase() || '';
+    rowEval.forEach((evaluation, colIndex) => {
+      const currentGuess = evaluations[rowIndex] || '';
+      const letter = currentGuess[colIndex]?.toLowerCase() || '';
       
       if (!letter) return;
       
@@ -39,6 +38,8 @@ const Keyboard: React.FC<KeyboardProps> = ({ onKeyPress, evaluations }) => {
   // Use real keyboard input as well
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (disabled) return;
+      
       const key = event.key.toUpperCase();
       
       if (key === 'ENTER' || key === 'BACKSPACE' || 
@@ -49,7 +50,7 @@ const Keyboard: React.FC<KeyboardProps> = ({ onKeyPress, evaluations }) => {
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onKeyPress]);
+  }, [onKeyPress, disabled]);
 
   return (
     <div className="flex flex-col items-center gap-1">
@@ -75,11 +76,14 @@ const Keyboard: React.FC<KeyboardProps> = ({ onKeyPress, evaluations }) => {
               }
             }
             
+            const disabledClass = disabled ? 'opacity-50 cursor-not-allowed' : 'hover:filter hover:brightness-90';
+            
             return (
               <button
                 key={key}
-                onClick={() => onKeyPress(key)}
-                className={`${width} h-12 sm:h-14 flex items-center justify-center font-medium ${bgColor} rounded text-sm sm:text-base`}
+                onClick={() => !disabled && onKeyPress(key)}
+                className={`${width} h-12 sm:h-14 flex items-center justify-center font-medium ${bgColor} rounded text-sm sm:text-base ${disabledClass}`}
+                disabled={disabled}
               >
                 {key === 'BACKSPACE' ? '⌫' : key}
               </button>
