@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Wordle Game Project
 
-## Getting Started
+This is a Next.js implementation of the Wordle game with two variations: classic Wordle and Absurdle (host cheating mode).
 
-First, run the development server:
+## How to Setup / Test / Run the Project
 
+### Prerequisites
+- Node.js 18.x or higher
+- npm or yarn package manager
+
+### Setup
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd wordle
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+### Running the Project
+Start the development server:
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser to play the game.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Game Modes
+- **Classic Wordle**: Standard version where you guess a 5-letter word within 6 attempts
+- **Absurdle**: A "cheating" version that changes the target word to be as difficult as possible
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Decisions and Trade-offs During Development
 
-## Learn More
+### Architecture Decisions
+1. **Next.js Framework**: Chosen for its server-side rendering capabilities and API routes, which enabled secure server/client implementation.
 
-To learn more about Next.js, take a look at the following resources:
+2. **In-memory Storage**: Used for game state management to keep the project simple. In a production environment, this would be replaced with a database solution.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **TypeScript**: Implemented throughout for type safety and better developer experience.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Game Logic Trade-offs
+1. **Word List**: Used a small, hardcoded word list for simplicity. A production version would use a more comprehensive dictionary.
 
-## Deploy on Vercel
+2. **Evaluation Logic**: Prioritized correctness over performance in the letter evaluation algorithm.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. **Absurdle Algorithm**: Implemented a strategy that selects patterns with the fewest hits/presents while maximizing remaining candidates.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### UI Considerations
+1. **Responsive Design**: Used Tailwind CSS to ensure the game works well on both mobile and desktop devices.
+
+2. **Keyboard Component**: Implemented both on-screen and physical keyboard support for better accessibility.
+
+3. **Game State Feedback**: Used color coding (green for hits, yellow for present, gray for miss) for clear visual feedback.
+
+### Security Concerns
+1. **Server-side Processing**: Answer is kept on the server and never sent to client until the game ends.
+
+2. **Input Validation**: All user inputs are validated on the server side to prevent cheating.
